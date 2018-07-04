@@ -1,0 +1,6 @@
+[package]
+name = "web_app_01"
+version = "0.1.0"
+authors = ["kazuha <mami.tomoe4@gmail.com>"]
+
+[dependencies]
