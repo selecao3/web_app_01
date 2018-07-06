@@ -54,6 +54,12 @@
         </div>
     </div>
     block-->
+    <script>
+        var target = document.getElementById("Text01");
+        target.readonly = false;
+
+    </script>
+
 
     <!--1ブロック分-->
     <div class="card mb-3" style="width: 300px; display: inline-block">
@@ -64,14 +70,51 @@
         </div>
         <img style="height: 200px; width: 100%; display: block;" src="dist/picture/DbT9lbYVMAAlYO2.jpg"
             alt="Card image">
+        <form action=""></form>
         <div class="card-body">
-            <p class="card-text">
-                <span style="font-style: italic">
+            <p class="card-text" id="Text01">
+                <span style="font-style: italic" id="Text02">
+
                     これは夢なのか現実なのか・・・。
                     <br>蒸し暑い真夏の昼、加熱した欲望は、遂に危険な領域へと突入する。
                 </span>
             </p>
         </div>
+
+        <script type="text/javascript">
+            function hoge() {
+                target = document.getElementById("Text01");
+                textBox = document.getElementById("readOnlyInput");
+                target.innerText = textBox.value;
+            }
+
+        </script>
+
+        <div class="form-group card-body">
+            <form action="" name="form1" id="id_form1">
+                <fieldset>
+                    <!--
+                  <label class="control-label" for="readOnlyInput">Readonly input</label>
+                  -->
+                    <textarea class="form-control card-text" id="readOnlyInput" placeholder="ここに入力してクレメンス" type="text" name="textBox1">
+
+                    </textarea>
+                    <input type="button" onclick = "hoge();">
+                </fieldset>
+            </form>
+
+        </div>
+
+        <!--
+        <div class="form-group">
+                <label for="exampleTextarea">Example textarea</label>
+                <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+              </div>
+              -->
+
+
+
+
         <ul class="list-group list-group-flush">
             <li class="list-group-item">@selecao3</li>
             <li class="list-group-item">@selecao114514</li>
@@ -84,8 +127,11 @@
 
     <div class="col-lg-12" style="width: 750px; display: inline-block; position: absolute; padding-left: 60px;">
         <div class="page-header">
-            <h1 style="margin-bottom: 20px">News</h1>
+            <h1 style="margin-bottom: 20px; display: inline-block">News</h1>
+            <button type="button" class="btn btn-success" style="position: absolute; margin-left: 500px;font-size: 24px">編集</button>
         </div>
+
+
         <div class="jumbotron">
             <h3 class="display-4">新刊発売です！</h3>
             <p class="lead">
