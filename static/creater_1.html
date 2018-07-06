@@ -82,10 +82,20 @@
         </div>
 
         <script type="text/javascript">
+            document.getElementById("id_form1").style.display = "none";
+
             function hoge() {
                 target = document.getElementById("Text01");
                 textBox = document.getElementById("readOnlyInput");
                 target.innerText = textBox.value;
+            }
+            function hogehoge() {
+                x = document.getElementById("id_form1");
+                if (x.style.display==="block") {
+                    x.style.display = "none";
+                }else {
+                    x.style.display = "block";
+                }
             }
 
         </script>
@@ -128,7 +138,7 @@
     <div class="col-lg-12" style="width: 750px; display: inline-block; position: absolute; padding-left: 60px;">
         <div class="page-header">
             <h1 style="margin-bottom: 20px; display: inline-block">News</h1>
-            <button type="button" class="btn btn-success" style="position: absolute; margin-left: 500px;font-size: 24px">編集</button>
+            <button type="button" class="btn btn-success" onclick="hogehoge();" style="position: absolute; margin-left: 500px;font-size: 24px">編集</button>
         </div>
 
 
