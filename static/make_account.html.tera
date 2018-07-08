@@ -45,11 +45,6 @@
             }
         }
     </style>
-    <script>
-
-	document.images[sample].style.visibility = "hidden";
-    
-    </script>
 </head>
 <body>
     <div class="card mb-3" style="width: 300px; display: inline-block">

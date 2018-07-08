@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+{% extends "Home" %}
+
+{% block content %}
 <html>
 <head>
     <meta charset="UTF-8">
@@ -100,7 +102,7 @@
                 </tbody>
                 </table>
                 --> 
-                〇〇さんがタイトル「△△」を投稿しました！
+                {{name}}さんがタイトル「{{name}}」を投稿しました！
                 <hr>
                 〇〇さんがタイトル「△△」を投稿しました！
                 <hr>
@@ -114,3 +116,4 @@
                 
                 </body>
 </html>
+{% endblock content %}

@@ -155,27 +155,25 @@
       <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="./Home.html">Home<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="./Home.html.tera">Home<span class="sr-only">(current)</span></a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" target="iframe" href="./creaters.html">creater</a>
+            <a class="nav-link" target="iframe" href="./creaters.html.tera">creater</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" target="iframe" href="./gallary.html">gallary</a>
+            <a class="nav-link" target="iframe" href="./gallary.html.tera">gallary</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="http://github.com/windyakin/Honoka/wiki">about me</a>
           </li>
           <li class="nav-item">
-
-            <a target="iframe" href="./sign_up.html">
+            <a target="iframe" href="./sign_up.html.tera">
               <button type="button" class="btn btn-secondary">
-              Sign up
+                Sign up
               </button>
             </a>
-
           </li>
 
         </ul>
@@ -186,15 +184,17 @@
   </nav>
 
     <!--contents-->
-<div class="container">
-  <div class="page-header" id="banner">
-    <div class="row my-4">
-      <div class="col-12">
-        <iframe src="./news.html" name="iframe" class="container" style="height: 1220px" frameborder="0"></iframe>
+    <div class="container">
+      <div class="page-header" id="banner">
+        <div class="row my-4">
+          <div class="col-12">
+            {% block content %}{% endblock content %}
+
+            <!--        <iframe src="./news.html.tera" name="iframe" class="container" style="height: 1220px" frameborder="0"></iframe>-->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
 
 

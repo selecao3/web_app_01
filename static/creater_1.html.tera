@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Creaters</title>
+    <link rel="stylesheet" type="text/css" href="dist/css/bootstrap.css">
+    <style type="text/css">
+        .bs-component+.bs-component {
+            margin-top: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            /*
+    .bs-docs-section {
+      margin-top: 8em;
+    }
+    */
+            .bs-component {
+                position: relative;
+            }
+            .bs-component .modal {
+                position: relative;
+                top: auto;
+                right: auto;
+                bottom: auto;
+                left: auto;
+                z-index: 1;
+                display: block;
+            }
+            .bs-component .modal-dialog {
+                width: 90%;
+            }
+            .bs-component .popover {
+                position: relative;
+                display: inline-block;
+                width: 220px;
+                margin: 20px;
+            }
+            .nav-tabs {
+                margin-bottom: 15px;
+            }
+            .progress {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+<!--ブロック一個分作る。
+<div id="tmp" class="col-lg-12">
+    <div class="page-header">
+        <h1 style="margin-bottom: 20px">Creaters</h1>
+    </div>
+</div>
+block-->
+<script>
+
+
+</script>
+
+
+<!--1ブロック分-->
+<div class="card mb-3" style="width: 300px; display: inline-block">
+    <h3 class="card-header">アカウント</h3>
+    <div class="card-body">
+        <h5 class="card-title">抹茶</h5>
+        <h6 class="card-subtitle text-muted"></h6>
+    </div>
+    <img style="height: 200px; width: 100%; display: block;" src="dist/picture/DbT9lbYVMAAlYO2.jpg"
+         alt="Card image">
+
+    <div id="change"></div>
+
+
+
+
+
+    <script type="text/javascript">
+        //document.getElementById("id_form1").style.display= "none";
+        var text_string = '<div class="card-body" id="change_to_form"><p class="card-text" id="Text01"><span style="font-style: italic" id="Text02">これは夢なのか現実なのか・・・。 <br>蒸し暑い真夏の昼、加熱した欲望は、遂に危険な領域へと突入する。</span></p></div>';
+        var form_string = '<div class="form-group card-body" id="change_to_text" style="padding: 5px 0 0;"><form action="" name="form1" id="id_form1"><fieldset><textarea style="background: #2C3E50;height: 200px" class="form-control" id="readOnlyInput" placeholder="ここに入力してクレメンス" type="text" name="User_Text"></textarea><input type="button" onclick = "hoge();"></fieldset></form> </div>';
+        var profile_text;
+        var count = 1;
+        document.getElementById("change").insertAdjacentHTML("afterbegin", text_string);
+
+        function change(){
+            if (count % 2 !== 0) {
+                profile_text = document.getElementById("Text02").innerText;
+                document.getElementById("change").innerHTML = form_string;
+                //formに変化
+                document.getElementById("readOnlyInput").innerHTML = profile_text;
+                //textareaに既に存在してあるテキストを代入。
+
+            }else {
+                document.getElementById("change").innerHTML = text_string;
+            }
+            count += 1;
+        }
+        function hoge() {
+            tmp = document.getElementById("readOnlyInput");
+            //textareaはinnerhtmlではなく、value.
+            document.getElementById("change").innerHTML = text_string;
+            document.getElementById("Text02").innerText= tmp.value;
+
+            count += 1;
+        }
+
+/*        function hogehoge() {
+            x = document.getElementById("id_form1");
+            if (x.style.display==="block") {
+                x.style.display = "none";
+            }else {
+                x.style.display = "block";
+            }
+        }*/
+    </script>
+    <!--
+    <div class="form-group">
+            <label for="exampleTextarea">Example textarea</label>
+            <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+          </div>
+          -->
+
+
+
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">@selecao3</li>
+        <li class="list-group-item">@selecao114514</li>
+    </ul>
+    <div class="card-footer text-muted">
+        2 days ago
+    </div>
+</div>
+<!--1ブロック分-->
+
+<div class="col-lg-12" style="width: 750px; display: inline-block; position: absolute; padding-left: 60px;">
+    <div class="page-header">
+        <h1 style="margin-bottom: 20px; display: inline-block">News</h1>
+        <button type="button" class="btn btn-success" onclick="change();" style="position: absolute; margin-left: 500px;font-size: 24px">編集</button>
+    </div>
+
+
+    <div class="jumbotron">
+        <h3 class="display-4">新刊発売です！</h3>
+        <p class="lead">
+            新刊発売決定です！
+            <br>お買い求めは以下のリンクで
+            <br><a href="">とらのあな</a>
+            <br><a href="">メロンブックス</a>
+        </p>
+    </div>
+    <div class="jumbotron">
+        <h3 class="display-4">新刊発売です！</h3>
+        <p class="lead">
+            新刊発売決定です！
+            <br>お買い求めは以下のリンクで
+            <br><a href="">とらのあな</a>
+            <br><a href="">メロンブックス</a>
+        </p>
+    </div>
+</div>
+
+
+
+<!--block-->
+
+</body>
+
+</html>
