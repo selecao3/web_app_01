@@ -1,0 +1,11 @@
+{% extends "creater_1" %}
+{% block text %}
+{% set flag = false%}
+<div class="card-body" id="change_to_form">
+    <p class="card-text" id="Text01">
+        <span style="font-style: italic" id="Text02">
+            { }}
+            </span>
+    </p>
+</div>
+{% endblock text %}

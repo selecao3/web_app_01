@@ -1,52 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Creaters</title>
-    <link rel="stylesheet" type="text/css" href="dist/css/bootstrap.css">
-    <style type="text/css">
-        .bs-component+.bs-component {
-            margin-top: 1rem;
-        }
+{% extends "Home" %}
+{% block content %}
 
-        @media (min-width: 768px) {
-            /*
-    .bs-docs-section {
-      margin-top: 8em;
-    }
-    */
-            .bs-component {
-                position: relative;
-            }
-            .bs-component .modal {
-                position: relative;
-                top: auto;
-                right: auto;
-                bottom: auto;
-                left: auto;
-                z-index: 1;
-                display: block;
-            }
-            .bs-component .modal-dialog {
-                width: 90%;
-            }
-            .bs-component .popover {
-                position: relative;
-                display: inline-block;
-                width: 220px;
-                margin: 20px;
-            }
-            .nav-tabs {
-                margin-bottom: 15px;
-            }
-            .progress {
-                margin-bottom: 10px;
-            }
-        }
-    </style>
-</head>
-<body>
 <!--1ブロック分-->
 <div class="form-group">
     <label for="exampleInputEmail1">Your name</label>
@@ -65,10 +19,8 @@
     <label for="exampleInputPassword1">Password</label>
     <input type="password" class="form-control" id="InputPassword" placeholder="Password">
 </div>
+    <form action="post">
+        <button type="button" class="btn btn-primary">Signup!!</button>
+    </form>
 
-
-
-<!--block-->
-
-</body>
-</html>
+{% endblock content %}

@@ -1,54 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Creaters</title>
-    <link rel="stylesheet" type="text/css" href="dist/css/bootstrap.css">
-    <style type="text/css">
-        .bs-component+.bs-component {
-            margin-top: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            /*
-    .bs-docs-section {
-      margin-top: 8em;
-    }
-    */
-            .bs-component {
-                position: relative;
-            }
-            .bs-component .modal {
-                position: relative;
-                top: auto;
-                right: auto;
-                bottom: auto;
-                left: auto;
-                z-index: 1;
-                display: block;
-            }
-            .bs-component .modal-dialog {
-                width: 90%;
-            }
-            .bs-component .popover {
-                position: relative;
-                display: inline-block;
-                width: 220px;
-                margin: 20px;
-            }
-            .nav-tabs {
-                margin-bottom: 15px;
-            }
-            .progress {
-                margin-bottom: 10px;
-            }
-        }
-    </style>
-
-</head>
-<body>
+{% extends "Home" %}
+{% block content %}
 <!--ブロック一個分作る。
 <div id="tmp" class="col-lg-12">
     <div class="page-header">
@@ -56,10 +7,6 @@
     </div>
 </div>
 block-->
-<script>
-
-
-</script>
 
 
 <!--1ブロック分-->
@@ -73,18 +20,37 @@ block-->
          alt="Card image">
 
     <div id="change"></div>
+{% set flag = true %}
+    {% if flag == true %}
+        {% block text %}
+        {% endblock text %}
+        {% else %}
+        {% block form %}
+        {% endblock form %}
+    {% endif %}
 
 
-
-
-
-    <script type="text/javascript">
+{#    <script type="text/javascript">
         //document.getElementById("id_form1").style.display= "none";
-        var text_string = '<div class="card-body" id="change_to_form"><p class="card-text" id="Text01"><span style="font-style: italic" id="Text02">これは夢なのか現実なのか・・・。 <br>蒸し暑い真夏の昼、加熱した欲望は、遂に危険な領域へと突入する。</span></p></div>';
-        var form_string = '<div class="form-group card-body" id="change_to_text" style="padding: 5px 0 0;"><form action="" name="form1" id="id_form1"><fieldset><textarea style="background: #2C3E50;height: 200px" class="form-control" id="readOnlyInput" placeholder="ここに入力してクレメンス" type="text" name="User_Text"></textarea><input type="button" onclick = "hoge();"></fieldset></form> </div>';
-        var profile_text;
+#}{#        var text_string = '<div class="card-body" id="change_to_form">' +
+            '<p class="card-text" id="Text01">' +
+            '<span style="font-style: italic" id="Text02">' +
+            {{ }} +
+            '</span>' +
+            '</p>' +
+            '</div>';
+        var form_string = '<div class="form-group card-body" id="change_to_text" style="padding: 5px 0 0;">' +
+            '<form action="/post/contribute" name="form1" id="id_form1">' +
+            '<fieldset>' +
+            '<textarea style="background: #2C3E50;height: 200px" class="form-control" id="readOnlyInput" placeholder="ここに入力してクレメンス" type="text" name="User_Text">' +
+            '</textarea>' +
+            '<input type="button" onclick = "hoge();">' +
+            '</fieldset>' +
+            '</form>' +
+            '</div>';#}{#
+#}{#        var profile_text;
         var count = 1;
-        document.getElementById("change").insertAdjacentHTML("afterbegin", text_string);
+        document.getElementById("change").insertAdjacentHTML("afterbegin", text_string);#}{#
 
         function change(){
             if (count % 2 !== 0) {
@@ -106,7 +72,8 @@ block-->
             document.getElementById("Text02").innerText= tmp.value;
 
             count += 1;
-        }
+            {% set flag = false%}
+{#        }#}{#
 
 /*        function hogehoge() {
             x = document.getElementById("id_form1");
@@ -116,7 +83,7 @@ block-->
                 x.style.display = "block";
             }
         }*/
-    </script>
+    </script>#}
     <!--
     <div class="form-group">
             <label for="exampleTextarea">Example textarea</label>
@@ -163,11 +130,4 @@ block-->
         </p>
     </div>
 </div>
-
-
-
-<!--block-->
-
-</body>
-
-</html>
+{% endblock content %}

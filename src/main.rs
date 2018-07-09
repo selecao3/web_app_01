@@ -12,7 +12,8 @@ use rocket_contrib::Template;
 
 #[derive(Serialize)]
 struct TemplateRenderTest{
-    name: String
+    name: String,
+
 }
 //テンプレートファイルに渡すstruct
 
@@ -78,25 +79,15 @@ fn login() -> Template {  // <- request handler
     Template::render("hoge", &context)
 }
 
-//落書き
-#[derive(FromForm)]
-struct User{
-    name: String,
-    mail_address: String,
-    account: String,
-    password: String,
-    register: bool,
-}
-//落書き
 
 
 use rocket::request::FromForm;
 
-#[get("/creater/<user>")]              // <- route attribute
+/*#[get("/creater/<user>", rank = 2)]              // <- route attribute
 fn admin(user: &RawStr) -> String {  // <- request handler
     format!("{}の個人ページ", user.as_str())
-}
-#[get("/creater/account", rank = 2)]              // <- route attribute
+}*/
+#[get("/creater/account")]              // <- route attribute
 fn user() -> Template {  // <- request handler
    let context = TemplateRenderTest{
         name: "name".to_string()
@@ -104,10 +95,10 @@ fn user() -> Template {  // <- request handler
     };
     Template::render("creater_1", &context)
 }
-#[get("/creater/account", rank = 3)]
+/*#[get("/creater/account", rank = 3)]
 fn redirect_admin() -> Redirect {
     Redirect::to("/login")
-}
+}*/
 //getメソッド群終わり
 
 
@@ -120,22 +111,49 @@ struct Profile{
     //個人ページの自己紹介
 }
 
+#[derive(Serialize)]
+struct TemplateRenderTest02{
+    text: String,
+    //writting text in user's textarea.
+    //you can use in template.
+
+}
 //postメソッド群
 //postアトリビュートのurlは、formのURIに対応している。
 #[post("/post/contribute", data = "<profile_form>")]
-fn contribute(profile_form: Form<Profile>) -> String{
-    profile_form.into_inner().profile
+fn contribute(profile_form: Form<Profile>) -> Template{
+    let profile = TemplateRenderTest02{
+        text: profile_form.into_inner().profile
+    };
+    Template::render("profile_text_template", profile)
     //テキストエリアでpostされた文章を返す関数
 }
+
+
 /*#[post("/post/sign_in", data = "<sign_in>")]
 fn signin(sign_in: Form<Profile>) -> String{
-}
-#[post("/post/sign_up", data = "<sign_up>")]
-fn regist(sign_up: Form<Profile>) -> String{
-}
-#[post("/post/logout", data = "<logout>")]
-fn logout(logout: Form<Profile>) -> String{
 }*/
+
+//落書き
+#[derive(FromForm)]
+struct User{
+    name: String,
+    mail_address: String,
+    account: String,
+    password: String,
+    register: bool,
+}
+//落書き
+
+/*#[post("/post/sign_up", data = "<sign_up>")]
+fn regist(sign_up: Form<User>) -> String{
+
+}*/
+/*#[post("/post/logout", data = "<logout>")]
+fn logout(logout: Form<Profile>) -> String{
+
+}*/
+
 
 use std::path::{Path, PathBuf};
 use rocket::response::NamedFile;
@@ -144,13 +162,18 @@ use rocket::response::NamedFile;
 fn all(path: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("static/").join(path)).ok()
 }
+#[get("/creater/<path..>", rank = 4)]
+//creater/hogehogeにstaticディレクトリを適用する
+fn creater_static(path: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/").join(path)).ok()
+}
 
 
 fn main() {
     rocket::ignite()
         .mount("/", routes![
     home,creater,images,about_me,signup,login,
-    admin,user,redirect_admin,all
+    user,all,creater_static
     ])
         .attach(Template::fairing())
         .launch();

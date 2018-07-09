@@ -57,21 +57,21 @@
       <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="./Home.html.tera">Home<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" target="iframe" href="./creaters.html.tera">creater</a>
+            <a class="nav-link" href="./creater">creater</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" target="iframe" href="./gallary.html.tera">gallary</a>
+            <a class="nav-link" href="./images">gallary</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="http://github.com/windyakin/Honoka/wiki">about me</a>
           </li>
           <li class="nav-item">
-            <a target="iframe" href="./sign_up.html.tera">
+            <a href="./signup">
               <button type="button" class="btn btn-secondary">
                 Sign up
               </button>
