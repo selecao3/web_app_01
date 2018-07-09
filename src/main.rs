@@ -23,7 +23,7 @@ fn home() -> Template{
         name: "name".to_string()
         //nameという文字列がHome.html.teraの{{name}}に渡される
     };
-    Template::render("Home", &context)
+    Template::render("news", &context)
 }
 
 /*#[get("/")]
