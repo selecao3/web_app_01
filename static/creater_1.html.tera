@@ -20,22 +20,14 @@ block-->
          alt="Card image">
 
     <div id="change"></div>
-{% set flag = true %}
-    {% if flag == true %}
-        {% block text %}
-        {% endblock text %}
-        {% else %}
-        {% block form %}
-        {% endblock form %}
-    {% endif %}
-
-
-{#    <script type="text/javascript">
+    <script type="text/javascript">
         //document.getElementById("id_form1").style.display= "none";
-#}{#        var text_string = '<div class="card-body" id="change_to_form">' +
+
+        var text = "{{ text }}";
+        var text_string = '<div class="card-body" id="change_to_form">' +
             '<p class="card-text" id="Text01">' +
             '<span style="font-style: italic" id="Text02">' +
-            {{ }} +
+            text +
             '</span>' +
             '</p>' +
             '</div>';
@@ -47,10 +39,10 @@ block-->
             '<input type="button" onclick = "hoge();">' +
             '</fieldset>' +
             '</form>' +
-            '</div>';#}{#
-#}{#        var profile_text;
+            '</div>';
+        var profile_text;
         var count = 1;
-        document.getElementById("change").insertAdjacentHTML("afterbegin", text_string);#}{#
+        document.getElementById("change").insertAdjacentHTML("afterbegin", text_string);
 
         function change(){
             if (count % 2 !== 0) {
@@ -69,11 +61,10 @@ block-->
             tmp = document.getElementById("readOnlyInput");
             //textareaはinnerhtmlではなく、value.
             document.getElementById("change").innerHTML = text_string;
-            document.getElementById("Text02").innerText= tmp.value;
+            document.getElementById("Text02").innerText = tmp.value;
 
             count += 1;
-            {% set flag = false%}
-{#        }#}{#
+        }
 
 /*        function hogehoge() {
             x = document.getElementById("id_form1");
@@ -83,7 +74,7 @@ block-->
                 x.style.display = "block";
             }
         }*/
-    </script>#}
+    </script>
     <!--
     <div class="form-group">
             <label for="exampleTextarea">Example textarea</label>

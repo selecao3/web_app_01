@@ -1,6 +1,6 @@
 {% extends "creater_1" %}
 {% block form %}
-    {% set flag = true%}
+    {% set flag = 0%}
     <div class="form-group card-body" id="change_to_text" style="padding: 5px 0 0;">
         <form action="/post/contribute" name="form1" id="id_form1">
             <fieldset>

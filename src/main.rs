@@ -89,8 +89,8 @@ fn admin(user: &RawStr) -> String {  // <- request handler
 }*/
 #[get("/creater/account")]              // <- route attribute
 fn user() -> Template {  // <- request handler
-   let context = TemplateRenderTest{
-        name: "name".to_string()
+   let context = TemplateRenderTest02{
+        text: "hogehoge".to_string()
         //nameという文字列がHome.html.teraの{{name}}に渡される
     };
     Template::render("creater_1", &context)
@@ -155,6 +155,7 @@ fn logout(logout: Form<Profile>) -> String{
 }*/
 
 
+//staticファイルを伝えるメソッド
 use std::path::{Path, PathBuf};
 use rocket::response::NamedFile;
 
@@ -167,14 +168,61 @@ fn all(path: PathBuf) -> Option<NamedFile> {
 fn creater_static(path: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("static/").join(path)).ok()
 }
+//staticファイルを伝えるメソッド終わり
+
+//databases
+#[macro_use] extern crate diesel;
+use diesel::prelude::*;
+use diesel::mysql::MysqlConnection;
+use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
+
+// An alias to the type for a pool of Diesel SQLite connections.
+type MysqlPool = Pool<ConnectionManager<MysqlConnection>>;
+
+// The URL to the database, set via the `DATABASE_URL` environment variable.
+static DATABASE_URL: &'static str = env!("DATABASE_URL");
+
+/// Initializes a database pool.
+fn init_pool() -> MysqlPool{
+    let manager = ConnectionManager::<MysqlConnection>::new(DATABASE_URL);
+    Pool::new(manager).expect("db pool")
+}
+struct Connection(PooledConnection<ConnectionManager<MysqlConnection>>);
+
+
+#[derive(Queryable)]
+struct Post {
+    id: i32,
+    title: String,
+    body: String,
+    published: bool,
+}
+table! {
+    posts (id) {
+        id -> Integer,
+        title -> Text,
+        body -> Text,
+        published -> Bool,
+    }
+}
+fn read(connection: &MysqlConnection) -> Vec<Post> {
+    posts::table.order(posts::id).load::<Post>(connection).unwrap()
+}
+#[get("/hoge")]
+fn hoge(connection: Connection) -> Template {
+    Template::render("creater_1", read(&connection))
+}
+//databases
 
 
 fn main() {
     rocket::ignite()
         .mount("/", routes![
     home,creater,images,about_me,signup,login,
-    user,all,creater_static
+    user,all,creater_static,
+    hoge
     ])
+        .manage(init_pool())
         .attach(Template::fairing())
         .launch();
 }
