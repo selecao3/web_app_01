@@ -4,15 +4,15 @@ version = "0.1.0"
 authors = ["kazuha <mami.tomoe4@gmail.com>"]
 
 [dependencies]
-rocket = "0.3.14"
-rocket_codegen = "0.3.14"
-serde = "1.0"
-serde_derive = "1.0"
-serde_json = "1.0"
-diesel = { version = "1.0.0", features = ["mysql","r2d2"]}
-dotenv = "0.9.0"
+rocket = "*"
+rocket_codegen = "*"
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
+diesel = { version = "*", features = ["mysql","r2d2"]}
+dotenv = "*"
 
 [dependencies.rocket_contrib]
 version = "*"
 default-features = false
-features = ["handlebars_templates", "tera_templates"]
+features = ["tera_templates"]
