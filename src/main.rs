@@ -1,5 +1,6 @@
 #![feature(plugin, custom_derive)]
 #![plugin(rocket_codegen)]
+#![feature(custom_attribute)]
 
 extern crate rocket;
 extern crate rocket_contrib;
@@ -179,7 +180,6 @@ use rocket::{Request, State, Outcome};
 use diesel::mysql::MysqlConnection;
 use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
 
-use diesel::query_dsl::methods::OrderDsl;
 use diesel::QueryDsl;
 
 
@@ -226,35 +226,47 @@ impl Deref for Connection {
 use diesel::prelude::*;
 
 
+mod schema{
+    table! {
+    posts (id) {
+        id -> Nullable<Integer>,
+        title -> VarChar,
+        //published -> Datetime,
+        body -> Text,
+        completed -> Bool,
+    }
+}
+}
 
-#[derive(Serialize, Deserialize, Queryable, Insertable, AsChangeset)]
+
+use self::schema::posts;
+use self::schema::posts::dsl::{posts as all_posts};
+
+#[derive(Serialize, Queryable, Debug,Clone)]
 #[table_name = "posts"]
 struct Post {
-    id: i32,
+    id: Option<i32>,
     title: String,
     body: String,
     published: bool,
 }
 
-table! {
-    posts{
-        id -> Nullable<Integer>,
-        title -> VarChar,
-        body -> Text,
-        published -> Bool,
-    }
-}
-use self::posts::dsl::{posts as all_posts, published as posts_published};
+
+
 
 
 fn read(connection: &MysqlConnection) -> Vec<Post> {
-    all_posts::table.order(posts::id).load::<Post>(connection).unwrap()
-
+    all_posts.order(posts::id.desc()).load::<Post>(connection).unwrap()
 }
+
+fn raw(conn: &Connection) -> Vec<Post>{
+    post: read(conn)
+}
+
 
 #[get("/hoge")]
 fn hoge(connection: Connection) -> Template {
-    Template::render("creater_1", read(&connection))
+    Template::render("creater_1", raw(&connection))
 }
 //databases
 
@@ -262,10 +274,10 @@ fn hoge(connection: Connection) -> Template {
 fn main() {
     rocket::ignite()
         .mount("/", routes![
-    home,creater,images,about_me,signup,login,
-    user,all,creater_static,
-    hoge
-    ])
+home,creater,images,about_me,signup,login,
+user,all,creater_static,
+hoge
+])
         .manage(connect())
         .attach(Template::fairing())
         .launch();
