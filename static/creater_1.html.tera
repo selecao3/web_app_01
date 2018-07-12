@@ -32,11 +32,12 @@ block-->
             '</p>' +
             '</div>';
         var form_string = '<div class="form-group card-body" id="change_to_text" style="padding: 5px 0 0;">' +
-            '<form action="/post/contribute" name="form1" id="id_form1">' +
+            '<form action="/creater/account/post/text" method="post" name="form1" id="id_form1">' +
+            '<input type="text" name="title" id="title">' +
             '<fieldset>' +
-            '<textarea style="background: #2C3E50;height: 200px" class="form-control" id="readOnlyInput" placeholder="ここに入力してクレメンス" type="text" name="User_Text">' +
+            '<textarea style="background: #2C3E50;height: 200px" class="form-control" id="readOnlyInput" placeholder="ここに入力してクレメンス" type="text" name="body">' +
             '</textarea>' +
-            '<input type="button" onclick = "hoge();">' +
+            '<input type="submit">' +
             '</fieldset>' +
             '</form>' +
             '</div>';

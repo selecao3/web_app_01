@@ -135,17 +135,6 @@ fn contribute(profile_form: Form<Profile>) -> Template{
 fn signin(sign_in: Form<Profile>) -> String{
 }*/
 
-//落書き
-#[derive(FromForm)]
-struct User{
-    name: String,
-    mail_address: String,
-    account: String,
-    password: String,
-    register: bool,
-}
-//落書き
-
 /*#[post("/post/sign_up", data = "<sign_up>")]
 fn regist(sign_up: Form<User>) -> String{
 
@@ -184,19 +173,19 @@ use diesel::QueryDsl;
 
 
 // An alias to the type for a pool of Diesel Mysql Connection
-pub type MysqlPool = Pool<ConnectionManager<MysqlConnection>>;
+type MysqlPool = Pool<ConnectionManager<MysqlConnection>>;
 
 // The URL to the database, set via the `DATABASE_URL` environment variable.
 static DATABASE_URL: &str = env!("DATABASE_URL");
 
 /// Initialize the database pool.
-pub fn connect() -> MysqlPool {
+fn connect() -> MysqlPool {
     let manager = ConnectionManager::<MysqlConnection>::new(DATABASE_URL);
     Pool::new(manager).expect("Failed to create pool")
 }
 
 // Connection request guard type: a wrapper around an r2d2 pooled connection.
-pub struct Connection(pub PooledConnection<ConnectionManager<MysqlConnection>>);
+struct Connection(pub PooledConnection<ConnectionManager<MysqlConnection>>);
 
 /// Attempts to retrieve a single connection from the managed database pool. If
 /// no pool is currently managed, fails with an `InternalServerError` status. If
@@ -233,22 +222,40 @@ mod schema{
         title -> VarChar,
         //published -> Datetime,
         body -> Text,
-        published -> Bool,
+        regulation -> Bool,
     }
 }
 }
 
 
 use self::schema::posts;
-use self::schema::posts::dsl::{posts as all_posts};
+use self::schema::posts::dsl::{posts as all_posts, regulation as post_regulation};
 
-#[derive(Serialize, Queryable, Debug,Clone)]
+#[derive(Serialize, Queryable, Debug,Clone,Insertable)]
 #[table_name = "posts"]
 struct Post {
     id: Option<i32>,
     title: String,
     body: String,
-    published: bool,
+    regulation: bool
+}
+
+#[derive(FromForm)]
+struct PostForm{
+    title: String,
+    body: String,
+/*    regulation: bool,*/
+}
+
+
+#[derive(Serialize, Queryable, Debug,Clone)]
+#[table_name = "user"]
+struct User{
+    id: Option<i32>,
+    name: String,
+    mail_address: String,
+    account: String,
+    password: String,
 }
 
 #[derive(Debug,Serialize)]
@@ -256,9 +263,39 @@ struct Context{
     post: Vec<Post>
 }
 
-    fn read(connection: &MysqlConnection) -> Vec<Post> {
-        all_posts.order(posts::id.desc()).load::<Post>(connection).unwrap()
+fn read(connection: &MysqlConnection) -> Vec<Post> {
+    all_posts.order(posts::id.desc()).load::<Post>(connection).unwrap()
+}
+fn insert(postform:PostForm, conn: &MysqlConnection) -> bool{
+    let t = Post{
+        id: None,
+        title: postform.title,
+        body: postform.body,
+        regulation: false
+    };
+    let a = diesel::insert_into(posts::table).values(&t).execute(conn).unwrap();
+    println!("{:?}",a);
+    diesel::insert_into(posts::table).values(&t).execute(conn).is_ok()
+}
+use rocket::response::Flash;
+
+#[post("/text", data = "<toukou_form>")]
+fn new(toukou_form: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
+    let t = toukou_form.into_inner();
+    println!("{}",t.body);
+    println!("{}",t.title);
+
+    println!("postを通ってます。");
+    if insert(t,&connection) {
+        println!("成功してる");
+
+        Flash::success(Redirect::to("/creater/account"), "成功してる")
+    } else {
+        println!("失敗");
+        Flash::error(Redirect::to("/creater/account"), "失敗した。")
     }
+
+}
 
 impl Context{
     fn row(connection: &MysqlConnection) -> Context{
@@ -274,7 +311,6 @@ impl Context{
 
 #[get("/hoge")]
 fn hoge(connection: Connection) -> Template {
-    println!("{:?}",Context::row(&connection).post);
     Template::render("hoge", Context::row(&connection))
 }
 //databases
@@ -286,6 +322,7 @@ fn main() {
 home,creater,images,about_me,signup,login,
 user,all,creater_static,hoge
 ])
+        .mount("/creater/account/post/", routes![new])
         .manage(connect())
         .attach(Template::fairing())
         .launch();
