@@ -77,7 +77,7 @@ fn login() -> Template {  // <- request handler
         name: "name".to_string()
         //nameという文字列がHome.html.teraの{{name}}に渡される
     };
-    Template::render("hoge", &context)
+    Template::render("login", &context)
 }
 
 
@@ -233,7 +233,7 @@ mod schema{
         title -> VarChar,
         //published -> Datetime,
         body -> Text,
-        completed -> Bool,
+        published -> Bool,
     }
 }
 }
@@ -251,22 +251,31 @@ struct Post {
     published: bool,
 }
 
-
-
-
-
-fn read(connection: &MysqlConnection) -> Vec<Post> {
-    all_posts.order(posts::id.desc()).load::<Post>(connection).unwrap()
+#[derive(Debug,Serialize)]
+struct Context{
+    post: Vec<Post>
 }
 
-fn raw(conn: &Connection) -> Vec<Post>{
-    post: read(conn)
+    fn read(connection: &MysqlConnection) -> Vec<Post> {
+        all_posts.order(posts::id.desc()).load::<Post>(connection).unwrap()
+    }
+
+impl Context{
+    fn row(connection: &MysqlConnection) -> Context{
+        Context{post: read(connection)}
+    }
 }
+
+
+//fn raw(conn: &Connection) -> Vec<Post>{
+//    post: Context::read()
+//}
 
 
 #[get("/hoge")]
 fn hoge(connection: Connection) -> Template {
-    Template::render("creater_1", raw(&connection))
+    println!("{:?}",Context::row(&connection).post);
+    Template::render("hoge", Context::row(&connection))
 }
 //databases
 
@@ -275,8 +284,7 @@ fn main() {
     rocket::ignite()
         .mount("/", routes![
 home,creater,images,about_me,signup,login,
-user,all,creater_static,
-hoge
+user,all,creater_static,hoge
 ])
         .manage(connect())
         .attach(Template::fairing())

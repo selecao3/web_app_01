@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hoge</title>
+</head>
+<body>
+{% for hoge in post %}
+    {{ hoge.id}}
+{{ hoge.title }}
+{{ hoge.body }}
+{% endfor %}
+
+</body>
+</html>
