@@ -23,7 +23,7 @@ block-->
     <script type="text/javascript">
         //document.getElementById("id_form1").style.display= "none";
 
-        var text = "{{ text }}";
+        var text = "aaa";
         var text_string = '<div class="card-body" id="change_to_form">' +
             '<p class="card-text" id="Text01">' +
             '<span style="font-style: italic" id="Text02">' +
@@ -58,7 +58,7 @@ block-->
             }
             count += 1;
         }
-        function hoge() {
+{#        function hoge() {
             tmp = document.getElementById("readOnlyInput");
             //textareaはinnerhtmlではなく、value.
             document.getElementById("change").innerHTML = text_string;
@@ -74,7 +74,7 @@ block-->
             }else {
                 x.style.display = "block";
             }
-        }*/
+        }*/#}
     </script>
     <!--
     <div class="form-group">
@@ -95,31 +95,66 @@ block-->
     </div>
 </div>
 <!--1ブロック分-->
+    <script type="text/javascript">
+        function hoge() {
 
-<div class="col-lg-12" style="width: 750px; display: inline-block; position: absolute; padding-left: 60px;">
+            tmp = document.getElementById("form_window").innerHTML =
+                '<form action="/creater/account/post/text" method="post" name="form1" id="id_form1">' +
+                '<div class="jumbotron">' +
+                '<h3 class="display-4">' +
+                '<input type="text" name="title" id="title">' +
+                '</h3>' +
+                '<textarea class="lead" name="body" id="body"></textarea>' +
+                '</div>'+
+                '<input type="submit">' +
+                '</form>';
+            //textareaはinnerhtmlではなく、value.
+        }
+
+    </script>
+    <div class="col-lg-12" style="width: 750px; display: inline-block; position: absolute; padding-left: 60px;">
     <div class="page-header">
         <h1 style="margin-bottom: 20px; display: inline-block">News</h1>
-        <button type="button" class="btn btn-success" onclick="change();" style="position: absolute; margin-left: 500px;font-size: 24px">編集</button>
+        <button type="button" class="btn btn-success" onclick="hoge();" style="position: absolute; margin-left: 500px;font-size: 24px">投稿する！</button>
     </div>
 
+    <div class="col-lg-12" style="width: 750px; display: inline-block; position: absolute; padding-left: 60px;">
+        <div class="page-header">
+            <h1 style="margin-bottom: 20px; display: inline-block">News</h1>
+            <button type="button" class="btn btn-success" onclick="change();" style="position: absolute; margin-left: 500px;font-size: 24px">編集</button>
 
-    <div class="jumbotron">
-        <h3 class="display-4">新刊発売です！</h3>
-        <p class="lead">
-            新刊発売決定です！
-            <br>お買い求めは以下のリンクで
-            <br><a href="">とらのあな</a>
-            <br><a href="">メロンブックス</a>
-        </p>
+        </div>
+
+
+
+        <div id="form_window"></div>
+
+        {% for hoge in post %}
+
+            <div class="jumbotron">
+                <h3 class="display-4">{{ hoge.title }}</h3>
+                <pre><p class="lead">{{ hoge.body }}</p></pre>
+
+            </div>
+
+            {#        <div class="jumbotron">
+            <h3 class="display-4">新刊発売です！</h3>
+            <p class="lead">
+                新刊発売決定です！
+                <br>お買い求めは以下のリンクで
+                <br><a href="">とらのあな</a>
+                <br><a href="">メロンブックス</a>
+            </p>
+        </div>
+        <div class="jumbotron">
+            <h3 class="display-4">新刊発売です！</h3>
+            <p class="lead">
+                新刊発売決定です！
+                <br>お買い求めは以下のリンクで
+                <br><a href="">とらのあな</a>
+                <br><a href="">メロンブックス</a>
+            </p>
+        </div>#}
+        {% endfor %}
     </div>
-    <div class="jumbotron">
-        <h3 class="display-4">新刊発売です！</h3>
-        <p class="lead">
-            新刊発売決定です！
-            <br>お買い求めは以下のリンクで
-            <br><a href="">とらのあな</a>
-            <br><a href="">メロンブックス</a>
-        </p>
-    </div>
-</div>
 {% endblock content %}

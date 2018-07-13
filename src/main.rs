@@ -88,14 +88,14 @@ use rocket::request::FromForm;
 fn admin(user: &RawStr) -> String {  // <- request handler
     format!("{}の個人ページ", user.as_str())
 }*/
-#[get("/creater/account")]              // <- route attribute
+/*#[get("/creater/account")]              // <- route attribute
 fn user() -> Template {  // <- request handler
    let context = TemplateRenderTest02{
         text: "hogehoge".to_string()
         //nameという文字列がHome.html.teraの{{name}}に渡される
     };
     Template::render("creater_1", &context)
-}
+}*/
 /*#[get("/creater/account", rank = 3)]
 fn redirect_admin() -> Redirect {
     Redirect::to("/login")
@@ -309,9 +309,9 @@ impl Context{
 //}
 
 
-#[get("/hoge")]
+#[get("/creater/account")]
 fn hoge(connection: Connection) -> Template {
-    Template::render("hoge", Context::row(&connection))
+    Template::render("creater_1", Context::row(&connection))
 }
 //databases
 
@@ -320,7 +320,7 @@ fn main() {
     rocket::ignite()
         .mount("/", routes![
 home,creater,images,about_me,signup,login,
-user,all,creater_static,hoge
+all,creater_static,hoge
 ])
         .mount("/creater/account/post/", routes![new])
         .manage(connect())
