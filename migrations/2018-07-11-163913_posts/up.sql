@@ -5,3 +5,9 @@ CREATE TABLE posts (
   body TEXT NOT NULL,
  regulation BOOLEAN NOT NULL
 );
+CREATE TABLE profile(
+  id INTEGER AUTO_INCREMENT PRIMARY KEY,
+  body VARCHAR(255) NULL,
+  link TEXT NULL,
+ --img,link
+);

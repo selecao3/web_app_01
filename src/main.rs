@@ -5,11 +5,16 @@
 extern crate rocket;
 extern crate rocket_contrib;
 #[macro_use] extern crate serde_derive;
+extern crate multipart;
+
 
 
 use rocket::http::RawStr;
 use rocket::response::Redirect;
 use rocket_contrib::Template;
+
+//mod image;
+
 
 #[derive(Serialize)]
 struct TemplateRenderTest{
@@ -273,8 +278,14 @@ fn insert(postform:PostForm, conn: &MysqlConnection) -> bool{
         body: postform.body,
         regulation: false
     };
+/*    println!("insert method");
+    println!("{}&{}",t.title,t.body);
+
     let a = diesel::insert_into(posts::table).values(&t).execute(conn).unwrap();
-    println!("{:?}",a);
+
+    //上の一行をコメントアウトすると一度のPOSTで二つ同じものをinsertすることになる（バグ）
+
+    println!("{:?}",a);*/
     diesel::insert_into(posts::table).values(&t).execute(conn).is_ok()
 }
 use rocket::response::Flash;
@@ -294,8 +305,58 @@ fn new(toukou_form: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
         println!("失敗");
         Flash::error(Redirect::to("/creater/account"), "失敗した。")
     }
-
 }
+
+
+#[post("/form", data = "<toukou>")]
+fn article(toukou: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
+    let t = toukou.into_inner();
+    println!("{}",t.body);
+    println!("{}",t.title);
+
+    println!("post");
+    if insert(t,&connection) {
+        println!("成功");
+        Flash::success(Redirect::to("/creater/account"), "成功してる")
+    } else {
+        println!("失敗");
+        Flash::error(Redirect::to("/creater/account"), "失敗した。")
+    }
+}
+
+
+use std::env;
+use std::io;
+use rocket::Data;
+
+
+use std::io::Read;
+use std::fs;
+use std::fs::File;
+
+use std::io::Write;
+
+extern crate rocket_static_fs;
+
+#[post("/upload", data = "<data>")]
+fn upload(data: Data) -> io::Result<Redirect> {
+    println!("upload function");
+    let mut body:Vec<u8> = vec![];
+    //let path = env::temp_dir().join("upload");
+
+    let aaa = data.stream_to(&mut body).unwrap() as usize;
+
+    let mut f = File::create("static/post_image/hoge.jpg").unwrap();
+    f.write_all(&body);
+    Ok(Redirect::to("/"))
+}
+
+#[get("/<path..>", rank = 6)]
+//creater/hogehogeにstaticディレクトリを適用する
+fn files(path: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/post_image").join(path)).ok()
+}
+
 
 impl Context{
     fn row(connection: &MysqlConnection) -> Context{
@@ -311,19 +372,22 @@ impl Context{
 
 #[get("/creater/account")]
 fn hoge(connection: Connection) -> Template {
+    println!("get中");
     Template::render("creater_1", Context::row(&connection))
 }
 //databases
+
 
 
 fn main() {
     rocket::ignite()
         .mount("/", routes![
 home,creater,images,about_me,signup,login,
-all,creater_static,hoge
+all,creater_static,hoge,files
 ])
-        .mount("/creater/account/post/", routes![new])
+        .mount("/creater/account/post/", routes![new,article,upload])
         .manage(connect())
         .attach(Template::fairing())
+
         .launch();
 }

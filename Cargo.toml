@@ -11,6 +11,8 @@ serde_derive = "*"
 serde_json = "*"
 diesel = { version = "*", features = ["mysql","r2d2"]}
 dotenv = "*"
+multipart = "*"
+rocket_static_fs = "0.5.1"
 
 [dependencies.rocket_contrib]
 version = "*"
