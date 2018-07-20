@@ -86,35 +86,14 @@ block-->
 
 
 
-    <form action="/creater/account/post/upload" method="post" name="form3" id="id_form3" enctype="multipart/form-data">
+<!--    <form action="/creater/account/post/upload" method="post" name="form3" id="id_form3" enctype="multipart/form-data">-->
+        <form action="/unko" method="post" name="form3" id="id_form3" enctype="multipart/form-data">
         <fieldset>
             <input name="file" type="file" accept="image/*">
             <input type="submit" value="upload">
         </fieldset>
     </form>
 
-    <script>
-        //ファイルアップロードイベント
-        $('#file').change(function(e) {
-
-            var files = e.target.files;
-            var oFile = files[0];
-
-            var reader = new FileReader();
-            reader.readAsDataURL(oFile);
-
-            //ファイル読込成功イベント
-            reader.onload = function(evt) {
-
-                // データURLスキーム形式のバイナリデータ
-                console.log(reader.result);
-
-                // base64形式のバイナリデータ
-                var base64 = btoa(reader.result);
-                console.log(base64);
-            }
-        });
-    </script>
 
 
 

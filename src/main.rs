@@ -6,14 +6,16 @@ extern crate rocket;
 extern crate rocket_contrib;
 #[macro_use] extern crate serde_derive;
 extern crate multipart;
+extern crate formdata;
 
 
+use image::static_rocket_route_info_for_multipart_upload;
 
 use rocket::http::RawStr;
 use rocket::response::Redirect;
 use rocket_contrib::Template;
 
-//mod image;
+mod image;
 
 
 #[derive(Serialize)]
@@ -338,16 +340,29 @@ use std::io::Write;
 
 extern crate rocket_static_fs;
 
+use rocket::http::hyper::header::Headers;
+
 #[post("/upload", data = "<data>")]
 fn upload(data: Data) -> io::Result<Redirect> {
-    println!("upload function");
+/*    println!("upload function");
     let mut body:Vec<u8> = vec![];
     //let path = env::temp_dir().join("upload");
 
     let aaa = data.stream_to(&mut body).unwrap() as usize;
 
     let mut f = File::create("static/post_image/hoge.jpg").unwrap();
-    f.write_all(&body);
+    f.write_all(&body);*/
+    let headers = Headers::new();
+    let form_data = formdata::read_formdata(&mut data.open(),&headers).unwrap();
+    println!("失敗");
+
+    for (name, value) in form_data.fields  {
+        println!("Posted field name={} value={}", name, value);
+    }
+    for (name, file) in form_data.files {
+    println!("Posted file name={} path={:?}", name, file.path);
+  }
+
     Ok(Redirect::to("/"))
 }
 
@@ -383,7 +398,7 @@ fn main() {
     rocket::ignite()
         .mount("/", routes![
 home,creater,images,about_me,signup,login,
-all,creater_static,hoge,files
+all,creater_static,hoge,files,multipart_upload
 ])
         .mount("/creater/account/post/", routes![new,article,upload])
         .manage(connect())

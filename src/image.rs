@@ -11,24 +11,16 @@ use rocket::response::status::Custom;
 use std::io::{self, Cursor, Write};
 use rocket::response::Redirect;
 use std::env;
-use rocket::Data;
 
 
 
 
 
-#[post("/hoge", data = "<data>")]
+#[post("/unko", data = "<data>")]
 // signature requires the request to have a `Content-Type`
 fn multipart_upload(cont_type: &ContentType, data: Data) -> Result<Stream<Cursor<Vec<u8>>>, Custom<String>> {
     // this and the next check can be implemented as a request guard but it seems like just
     // more boilerplate than necessary
-    if !cont_type.is_form_data() {
-        println!("multipart_upload関数");
-        return Err(Custom(
-            Status::BadRequest,
-            "Content-Type not multipart/form-data".into()
-        ));
-    }
 
     let (_, boundary) = cont_type.params().find(|&(k, _)| k == "boundary").ok_or_else(
             || Custom(
@@ -36,6 +28,7 @@ fn multipart_upload(cont_type: &ContentType, data: Data) -> Result<Stream<Cursor
                 "`Content-Type: multipart/form-data` boundary param not provided".into()
             )
         )?;
+    //boundaryの取得
 
     match process_upload(boundary, data) {
         Ok(resp) => Ok(Stream::from(Cursor::new(resp))),
@@ -50,9 +43,12 @@ fn process_upload(boundary: &str, data: Data) -> io::Result<Vec<u8>> {
     // saves all fields, any field longer than 10kB goes to a temporary directory
     // Entries could implement FromData though that would give zero control over
     // how the files are saved; Multipart would be a good impl candidate though
-    match Multipart::with_body(data.open(), boundary).save().temp() {
+    match Multipart::with_body(data.open(), boundary).save().with_dir("static/post_image") {
+        //全てのフィールドを一旦保存する
         Full(entries) => process_entries(entries, &mut out)?,
+        //成功,entriesにはフィールドが全て詰まっている
         Partial(partial, reason) => {
+            //途中で失敗した。
             writeln!(out, "Request partially processed: {:?}", reason)?;
             if let Some(field) = partial.partial {
                 writeln!(out, "Stopped on field: {:?}", field.source.headers)?;
@@ -70,10 +66,10 @@ fn process_upload(boundary: &str, data: Data) -> io::Result<Vec<u8>> {
 // but not one that you can `write()` to
 fn process_entries(entries: Entries, mut out: &mut Vec<u8>) -> io::Result<()> {
     {
-        println!("process_entries関数");
         let stdout = io::stdout();
         let tee = StdoutTee::new(&mut out, &stdout);
-        entries.write_debug(tee)?;
+        //entries.write_debug(tee)?;
+        println!("======¥n{:?}¥n========",entries);
     }
 
     writeln!(out, "Entries processed")
