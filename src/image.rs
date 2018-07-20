@@ -1,6 +1,8 @@
-use multipart::mock::StdoutTee;
 use multipart::server::Multipart;
+
+
 use multipart::server::save::Entries;
+
 use multipart::server::save::SaveResult::*;
 
 use rocket::Data;
@@ -64,18 +66,15 @@ fn process_upload(boundary: &str, data: Data) -> io::Result<Vec<u8>> {
 
 // having a streaming output would be nice; there's one for returning a `Read` impl
 // but not one that you can `write()` to
+
+use multipart::server::FieldHeaders;
 fn process_entries(entries: Entries, mut out: &mut Vec<u8>) -> io::Result<()> {
     {
-        let stdout = io::stdout();
-        let tee = StdoutTee::new(&mut out, &stdout);
-        //entries.write_debug(tee)?;
-        println!("======¥n{:?}¥n========",entries);
+        println!("======¥n{:?}¥n========",entries.fields.get(&"file".to_string()).unwrap());
+        //let aaa = &entries.fields.get(&"file".to_string()).unwrap().get(0).unwrap().data;
+
     }
 
     writeln!(out, "Entries processed")
 }
 
-/*
-fn main() {
-    rocket::ignite().mount("/", routes![multipart_upload]).launch();
-}*/
