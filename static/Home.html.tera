@@ -87,6 +87,7 @@
       <div class="page-header" id="banner">
         <div class="row my-4">
           <div class="col-12">
+
             {% block content %}
             {% endblock content %}
 

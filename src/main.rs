@@ -7,6 +7,7 @@ extern crate rocket_contrib;
 #[macro_use] extern crate serde_derive;
 extern crate multipart;
 extern crate formdata;
+#[macro_use] extern crate diesel;
 
 
 use image::static_rocket_route_info_for_multipart_upload;
@@ -16,6 +17,10 @@ use rocket::response::Redirect;
 use rocket_contrib::Template;
 
 mod image;
+mod database;
+mod model;
+
+use model
 
 
 #[derive(Serialize)]
@@ -167,57 +172,6 @@ fn creater_static(path: PathBuf) -> Option<NamedFile> {
 }
 //staticファイルを伝えるメソッド終わり
 
-//databases
-#[macro_use] extern crate diesel;
-use std::ops::Deref;
-use rocket::http::Status;
-use rocket::request::{self, FromRequest};
-use rocket::{Request, State, Outcome};
-use diesel::mysql::MysqlConnection;
-use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
-
-use diesel::QueryDsl;
-
-
-// An alias to the type for a pool of Diesel Mysql Connection
-type MysqlPool = Pool<ConnectionManager<MysqlConnection>>;
-
-// The URL to the database, set via the `DATABASE_URL` environment variable.
-static DATABASE_URL: &str = env!("DATABASE_URL");
-
-/// Initialize the database pool.
-fn connect() -> MysqlPool {
-    let manager = ConnectionManager::<MysqlConnection>::new(DATABASE_URL);
-    Pool::new(manager).expect("Failed to create pool")
-}
-
-// Connection request guard type: a wrapper around an r2d2 pooled connection.
-struct Connection(pub PooledConnection<ConnectionManager<MysqlConnection>>);
-
-/// Attempts to retrieve a single connection from the managed database pool. If
-/// no pool is currently managed, fails with an `InternalServerError` status. If
-/// no connections are available, fails with a `ServiceUnavailable` status.
-impl<'a, 'r> FromRequest<'a, 'r> for Connection {
-    type Error = ();
-
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
-        let pool = request.guard::<State<MysqlPool>>()?;
-        match pool.get() {
-            Ok(conn) => Outcome::Success(Connection(conn)),
-            Err(_) => Outcome::Failure((Status::ServiceUnavailable, ()))
-        }
-    }
-}
-
-// For the convenience of using an &Connection as an &MysqlConnection.
-impl Deref for Connection {
-    type Target = MysqlConnection;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
 
 use diesel::prelude::*;
 
@@ -310,21 +264,6 @@ fn new(toukou_form: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
 }
 
 
-#[post("/form", data = "<toukou>")]
-fn article(toukou: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
-    let t = toukou.into_inner();
-    println!("{}",t.body);
-    println!("{}",t.title);
-
-    println!("post");
-    if insert(t,&connection) {
-        println!("成功");
-        Flash::success(Redirect::to("/creater/account"), "成功してる")
-    } else {
-        println!("失敗");
-        Flash::error(Redirect::to("/creater/account"), "失敗した。")
-    }
-}
 
 
 use std::env;
@@ -388,9 +327,18 @@ impl Context{
 #[get("/creater/account")]
 fn hoge(connection: Connection) -> Template {
     println!("get中");
-    Template::render("creater_1", Context::row(&connection))
+    Template::render("creater_profile", Context::row(&connection))
 }
 //databases
+#[post("/setting", data = "<toukou>")]
+fn profile_setting(toukou: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
+    let t = toukou.into_inner();
+    if insert(t,&connection) {
+        Flash::success(Redirect::to("/creater/account"), "成功してる")
+    } else {
+        Flash::error(Redirect::to("/creater/account"), "失敗した。")
+    }
+}
 
 
 
@@ -400,7 +348,7 @@ fn main() {
 home,creater,images,about_me,signup,login,
 all,creater_static,hoge,files,multipart_upload
 ])
-        .mount("/creater/account/post/", routes![new,article,upload])
+        .mount("/creater/account/post/", routes![new,upload,profile_setting])
         .manage(connect())
         .attach(Template::fairing())
 

@@ -18,7 +18,7 @@ use std::env;
 
 
 
-#[post("/unko", data = "<data>")]
+#[post("/hoge", data = "<data>")]
 // signature requires the request to have a `Content-Type`
 fn multipart_upload(cont_type: &ContentType, data: Data) -> Result<Stream<Cursor<Vec<u8>>>, Custom<String>> {
     // this and the next check can be implemented as a request guard but it seems like just
