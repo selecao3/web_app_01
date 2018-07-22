@@ -60,7 +60,7 @@ block-->
         }
         function hoge() {
             document.getElementById("form_window").innerHTML =
-                '<form action="/creater/account/post/form" method="post" name="form2" id="id_form2" enctype="multipart/form-data">' +
+                '<form action="/creater/account/post/form" method="post" name="form2" id="id_form2">' +
                 '<div class="jumbotron">' +
                 '<fieldset>' +
                 '<h3 class="display-4">' +

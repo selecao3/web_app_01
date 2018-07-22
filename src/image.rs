@@ -68,10 +68,23 @@ fn process_upload(boundary: &str, data: Data) -> io::Result<Vec<u8>> {
 // but not one that you can `write()` to
 
 use multipart::server::FieldHeaders;
+use multipart::server::save::SavedField;
+use multipart::server::save::SaveDir::Perm;
+use multipart::server::save::SavedData;
+use std::path::PathBuf;
 fn process_entries(entries: Entries, mut out: &mut Vec<u8>) -> io::Result<()> {
     {
-        println!("======¥n{:?}¥n========",entries.fields.get(&"file".to_string()).unwrap());
-        //let aaa = &entries.fields.get(&"file".to_string()).unwrap().get(0).unwrap().data;
+/*        println!("======¥n{:?}¥n========",entries.fields.get(&"file".to_string()).unwrap().get(0));*/
+        let aaa = &entries.fields.get(&"file".to_string()).unwrap().get(0).unwrap().data;
+        if let SavedData::File(bbb,ccc) = aaa{
+            println!("{:?}", bbb);
+        }
+
+/*        let hoge = entries.save_dir;
+        let hage = Perm(hoge.into_path());*/
+
+
+/*        println!("{:?}", aaa.get(0).unwrap().data::File);*/
 
     }
 

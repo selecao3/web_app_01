@@ -173,26 +173,26 @@ use std::ops::Deref;
 use rocket::http::Status;
 use rocket::request::{self, FromRequest};
 use rocket::{Request, State, Outcome};
-use diesel::mysql::MysqlConnection;
+use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
 
 use diesel::QueryDsl;
 
 
 // An alias to the type for a pool of Diesel Mysql Connection
-type MysqlPool = Pool<ConnectionManager<MysqlConnection>>;
+type PgPool = Pool<ConnectionManager<PgConnection>>;
 
 // The URL to the database, set via the `DATABASE_URL` environment variable.
 static DATABASE_URL: &str = env!("DATABASE_URL");
 
 /// Initialize the database pool.
-fn connect() -> MysqlPool {
-    let manager = ConnectionManager::<MysqlConnection>::new(DATABASE_URL);
+fn connect() -> PgPool{
+    let manager = ConnectionManager::<PgConnection>::new(DATABASE_URL);
     Pool::new(manager).expect("Failed to create pool")
 }
 
 // Connection request guard type: a wrapper around an r2d2 pooled connection.
-struct Connection(pub PooledConnection<ConnectionManager<MysqlConnection>>);
+struct Connection(pub PooledConnection<ConnectionManager<PgConnection>>);
 
 /// Attempts to retrieve a single connection from the managed database pool. If
 /// no pool is currently managed, fails with an `InternalServerError` status. If
@@ -201,7 +201,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Connection {
     type Error = ();
 
     fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
-        let pool = request.guard::<State<MysqlPool>>()?;
+        let pool = request.guard::<State<PgPool>>()?;
         match pool.get() {
             Ok(conn) => Outcome::Success(Connection(conn)),
             Err(_) => Outcome::Failure((Status::ServiceUnavailable, ()))
@@ -211,7 +211,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Connection {
 
 // For the convenience of using an &Connection as an &MysqlConnection.
 impl Deref for Connection {
-    type Target = MysqlConnection;
+    type Target = PgConnection;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -222,8 +222,22 @@ impl Deref for Connection {
 use diesel::prelude::*;
 
 
-mod schema{
+mod schema {
     table! {
+    posts (id) {
+        id -> Nullable<Int4>,
+        account -> Varchar,
+        title -> Varchar,
+        body -> Nullable<Text>,
+        img_url_1 -> Nullable<Text>,
+        img_url_2 -> Nullable<Text>,
+        img_url_3 -> Nullable<Text>,
+        img_url_4 -> Nullable<Text>,
+        regulation -> Bool,
+    }
+}
+}
+/*    table! {
     posts (id) {
         id -> Nullable<Integer>,
         title -> VarChar,
@@ -232,7 +246,7 @@ mod schema{
         regulation -> Bool,
     }
 }
-}
+}*/
 
 
 use self::schema::posts;
@@ -242,19 +256,43 @@ use self::schema::posts::dsl::{posts as all_posts, regulation as post_regulation
 #[table_name = "posts"]
 struct Post {
     id: Option<i32>,
+    account: String,
     title: String,
-    body: String,
+    body: Option<String>,
+    img_url_1: Option<String>,
+    img_url_2: Option<String>,
+    img_url_3: Option<String>,
+    img_url_4: Option<String>,
     regulation: bool
 }
+
+/*#[derive(Serialize, Queryable, Debug,Clone,Insertable)]
+#[table_name = "gallarys"]
+struct Gallary{
+    img_url: String,
+    user_url: String,
+    regulation: bool
+}*/
 
 #[derive(FromForm)]
 struct PostForm{
     title: String,
-    body: String,
-/*    regulation: bool,*/
+    body: Option<String>,
+    img_url_1: Option<String>,
+    img_url_2: Option<String>,
+    img_url_3: Option<String>,
+    img_url_4: Option<String>,
+    regulation: bool,
+    /*    regulation: bool,*/
 }
-
-
+#[derive(FromForm)]
+struct GallaryForm{
+    img_url: String,
+    user_url: String,
+    regulation: bool
+    /*    regulation: bool,*/
+}
+/*
 #[derive(Serialize, Queryable, Debug,Clone)]
 #[table_name = "user"]
 struct User{
@@ -264,30 +302,41 @@ struct User{
     account: String,
     password: String,
 }
+*/
 
 #[derive(Debug,Serialize)]
 struct Context{
     post: Vec<Post>
 }
 
-fn read(connection: &MysqlConnection) -> Vec<Post> {
-    all_posts.order(posts::id.desc()).load::<Post>(connection).unwrap()
+fn read(connection: &PgConnection) -> Vec<Post> {
+    //postsテーブルからデータを読み取る。
+    all_posts
+        .order(posts::id.desc())
+        .load::<Post>(connection)
+        .expect("error")
 }
-fn insert(postform:PostForm, conn: &MysqlConnection) -> bool{
+fn insert(postform:PostForm, conn: &PgConnection) -> bool{
     let t = Post{
         id: None,
+        account: "root".to_string(),
         title: postform.title,
         body: postform.body,
+        img_url_1: postform.img_url_1,
+        img_url_2: postform.img_url_2,
+        img_url_3: postform.img_url_3,
+        img_url_4: postform.img_url_4,
+        //保存したimg_urlをどうにかしてPost structへ・・・
         regulation: false
     };
-/*    println!("insert method");
-    println!("{}&{}",t.title,t.body);
+    /*    println!("insert method");
+        println!("{}&{}",t.title,t.body);
 
-    let a = diesel::insert_into(posts::table).values(&t).execute(conn).unwrap();
+        let a = diesel::insert_into(posts::table).values(&t).execute(conn).unwrap();
 
-    //上の一行をコメントアウトすると一度のPOSTで二つ同じものをinsertすることになる（バグ）
+        //上の一行をコメントアウトすると一度のPOSTで二つ同じものをinsertすることになる（バグ）
 
-    println!("{:?}",a);*/
+        println!("{:?}",a);*/
     diesel::insert_into(posts::table).values(&t).execute(conn).is_ok()
 }
 use rocket::response::Flash;
@@ -295,8 +344,6 @@ use rocket::response::Flash;
 #[post("/text", data = "<toukou_form>")]
 fn new(toukou_form: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
     let t = toukou_form.into_inner();
-    println!("{}",t.body);
-    println!("{}",t.title);
 
     println!("postを通ってます。");
     if insert(t,&connection) {
@@ -313,8 +360,6 @@ fn new(toukou_form: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
 #[post("/form", data = "<toukou>")]
 fn article(toukou: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
     let t = toukou.into_inner();
-    println!("{}",t.body);
-    println!("{}",t.title);
 
     println!("post");
     if insert(t,&connection) {
@@ -344,14 +389,14 @@ use rocket::http::hyper::header::Headers;
 
 #[post("/upload", data = "<data>")]
 fn upload(data: Data) -> io::Result<Redirect> {
-/*    println!("upload function");
-    let mut body:Vec<u8> = vec![];
-    //let path = env::temp_dir().join("upload");
+    /*    println!("upload function");
+        let mut body:Vec<u8> = vec![];
+        //let path = env::temp_dir().join("upload");
 
-    let aaa = data.stream_to(&mut body).unwrap() as usize;
+        let aaa = data.stream_to(&mut body).unwrap() as usize;
 
-    let mut f = File::create("static/post_image/hoge.jpg").unwrap();
-    f.write_all(&body);*/
+        let mut f = File::create("static/post_image/hoge.jpg").unwrap();
+        f.write_all(&body);*/
     let headers = Headers::new();
     let form_data = formdata::read_formdata(&mut data.open(),&headers).unwrap();
     println!("失敗");
@@ -360,8 +405,8 @@ fn upload(data: Data) -> io::Result<Redirect> {
         println!("Posted field name={} value={}", name, value);
     }
     for (name, file) in form_data.files {
-    println!("Posted file name={} path={:?}", name, file.path);
-  }
+        println!("Posted file name={} path={:?}", name, file.path);
+    }
 
     Ok(Redirect::to("/"))
 }
@@ -374,7 +419,7 @@ fn files(path: PathBuf) -> Option<NamedFile> {
 
 
 impl Context{
-    fn row(connection: &MysqlConnection) -> Context{
+    fn row(connection: &PgConnection) -> Context{
         Context{post: read(connection)}
     }
 }
