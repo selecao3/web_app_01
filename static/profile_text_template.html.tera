@@ -1,4 +1,3 @@
-{% extends "creater_1" %}
 {% block text %}
 {% set flag = 1 %}
 <div class="card-body" id="change_to_form">
