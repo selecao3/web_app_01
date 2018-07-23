@@ -77,7 +77,8 @@ fn process_entries(entries: Entries, mut out: &mut Vec<u8>) -> io::Result<()> {
 /*        println!("======¥n{:?}¥n========",entries.fields.get(&"file".to_string()).unwrap().get(0));*/
         let aaa = &entries.fields.get(&"file".to_string()).unwrap().get(0).unwrap().data;
         if let SavedData::File(bbb,ccc) = aaa{
-            println!("{:?}", bbb);
+                println!("{:?}", bbb);
+
         }
 
 /*        let hoge = entries.save_dir;

@@ -167,6 +167,8 @@ fn creater_static(path: PathBuf) -> Option<NamedFile> {
 }
 //staticファイルを伝えるメソッド終わり
 
+
+
 //databases
 #[macro_use] extern crate diesel;
 use std::ops::Deref;
@@ -237,17 +239,6 @@ mod schema {
     }
 }
 }
-/*    table! {
-    posts (id) {
-        id -> Nullable<Integer>,
-        title -> VarChar,
-        //published -> Datetime,
-        body -> Text,
-        regulation -> Bool,
-    }
-}
-}*/
-
 
 use self::schema::posts;
 use self::schema::posts::dsl::{posts as all_posts, regulation as post_regulation};
@@ -304,11 +295,19 @@ struct User{
 }
 */
 
+//database関係終わり
+
+
+
+
+//dbのカラムをオブジェクト化するstruct
 #[derive(Debug,Serialize)]
 struct Context{
     post: Vec<Post>
 }
+//dbのカラムをオブジェクト化するstruct終わり
 
+//dbからカラムを操作する関数
 fn read(connection: &PgConnection) -> Vec<Post> {
     //postsテーブルからデータを読み取る。
     all_posts
@@ -316,6 +315,9 @@ fn read(connection: &PgConnection) -> Vec<Post> {
         .load::<Post>(connection)
         .expect("error")
 }
+//dbからカラムを操作する関数終わり
+
+//formから受け取ったデータをdbに突っ込む関数
 fn insert(postform:PostForm, conn: &PgConnection) -> bool{
     let t = Post{
         id: None,
@@ -339,9 +341,12 @@ fn insert(postform:PostForm, conn: &PgConnection) -> bool{
         println!("{:?}",a);*/
     diesel::insert_into(posts::table).values(&t).execute(conn).is_ok()
 }
+//formから受け取ったデータをdbに突っ込む関数終わり
+
+
 use rocket::response::Flash;
 
-#[post("/text", data = "<toukou_form>")]
+#[post("/text", data = "<data>")]
 fn new(toukou_form: Form<PostForm>, connection: Connection) -> Flash<Redirect>{
     let t = toukou_form.into_inner();
 
